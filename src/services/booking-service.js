@@ -87,7 +87,7 @@ async function makePayment(data) {
 }
 
 async function cancelBooking(bookingId) {
-  console.log("Inside cancel booking");
+  
   const transaction = await db.sequelize.transaction();
   try {
     const bookingDetails = await bookingRepository.get(bookingId, transaction);
@@ -113,4 +113,12 @@ async function cancelBooking(bookingId) {
     throw error;
   }
 }
-module.exports = { createBooking, makePayment };
+
+async function cancelOldBookings() {
+  try {
+    const currentTime = new Date(Date.now() - 1000 * 300); //subtract 5 min in miliseconds
+    const response = await bookingRepository.cancelOldBookings(currentTime);
+    return response;
+  } catch (error) {}
+}
+module.exports = { createBooking, makePayment, cancelOldBookings };
